@@ -12,10 +12,11 @@ class WebsiteTextExporter:
         self.driver = webdriver.Edge(options=edge_options)
 
     def extract_texts(self):
-        """Extract all visible texts from the webpage"""
-        elements = self.driver.find_elements(By.XPATH, "//*[not(*) and normalize-space()]")
-        texts = list(set([element.text.strip() for element in elements if element.text.strip()]))
-        return texts
+        """Extract all visible texts from the webpage (deeper scan)"""
+        body = self.driver.find_element(By.TAG_NAME, "body")
+        full_text = self.driver.execute_script("return arguments[0].innerText;", body)
+        texts = [line.strip() for line in full_text.split("\n") if line.strip()]
+        return list(set(texts))
 
     def delete_texts(self, texts):
         """Delete specified texts from the webpage"""
